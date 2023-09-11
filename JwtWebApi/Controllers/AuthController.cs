@@ -58,12 +58,15 @@ namespace JwtWebApi.Controllers
         {
             // Need to learn more about claims in depth.
             List<Claim> claims = new List<Claim> {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim(ClaimTypes.Role, "User"),
             };
 
             // When using SymmetricSecurityKey, need to install IdentityModel.Tokens.
             // Key is used to create Json web token and verify Json web token.
             // Need to learn more about SymmetricSecurityKey in depth.
+            // Token is made in appsettings.json.
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("AppSettings:Token").Value!));
 

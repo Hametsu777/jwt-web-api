@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JwtWebApi.Controllers
@@ -18,7 +19,10 @@ namespace JwtWebApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
+        // Learn more about Authorization and Authentication. dotnet user-jwts --help is to see list of
+        // jwts commands in package manager console. Add command and help to see help for a specific command.
+        // Example dotnet user-jwts create --help. Brings up a list of create options/commands.
+        [HttpGet(Name = "GetWeatherForecast"), Authorize(Roles = "Admin,User")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
