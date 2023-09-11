@@ -1,5 +1,7 @@
 ﻿using JwtWebApi.DTOs;
 using JwtWebApi.Models;
+using JwtWebApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,10 +18,25 @@ namespace JwtWebApi.Controllers
         public static User user = new User();
         // Iconfiguration grants access to appsettings.json.
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, IUserService userService)
         {
             _configuration = configuration;
+            _userService = userService;
+        }
+
+        [HttpGet, Authorize]
+        // Get claim values. In this case, it is name and two role values, Admin and User.
+        public ActionResult<string> GetMyName()
+        {
+            return Ok(_userService.GetMyName());
+            // Code before using a service.
+            //var userName = User?.Identity?.Name;
+            //var roleClaims = User?.FindAll(ClaimTypes.Role);
+            //var roles = roleClaims?.Select(c => c.Value).ToList();
+            //var roles2 = User?.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            //return Ok(new { userName, roles, roles2 });
         }
 
         [HttpPost("/register")]
@@ -45,7 +62,7 @@ namespace JwtWebApi.Controllers
             // Verify if requested password matches user password.
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
-                return BadRequest("Password does not exist.");
+                return BadRequest("Wrong password.");
             }
             string token = CreateToken(user);
             return Ok(token);
